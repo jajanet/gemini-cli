@@ -23,6 +23,12 @@ type ObjectType = 'metadata' | 'workspace';
 const getTmpArchiveFilename = (taskId: string): string =>
   `task-${taskId}-workspace-${uuidv4()}.tar.gz`;
 
+// Sanitize the taskId to prevent path traversal attacks
+const sanitizeTaskId = (taskId: string): string => {
+  // Allow only alphanumeric characters, dashes, and underscores
+  return taskId.replace(/[^a-zA-Z0-9_-]/g, '');
+};
+
 export class GCSTaskStore implements TaskStore {
   private storage: Storage;
   private bucketName: string;
@@ -78,7 +84,11 @@ export class GCSTaskStore implements TaskStore {
   }
 
   private getObjectPath(taskId: string, type: ObjectType): string {
-    return `tasks/${taskId}/${type}.tar.gz`;
+    const sanitizedTaskId = sanitizeTaskId(taskId);
+    if (sanitizedTaskId !== taskId) {
+        throw new Error(`Invalid taskId: ${taskId}`);
+    }
+    return `tasks/${sanitizedTaskId}/${type}.tar.gz`;
   }
 
   async save(task: SDKTask): Promise<void> {
