@@ -23,10 +23,11 @@ type ObjectType = 'metadata' | 'workspace';
 const getTmpArchiveFilename = (taskId: string): string =>
   `task-${taskId}-workspace-${uuidv4()}.tar.gz`;
 
-// Sanitize the taskId to prevent path traversal attacks
-const sanitizeTaskId = (taskId: string): string => {
-  // Allow only alphanumeric characters, dashes, and underscores
-  return taskId.replace(/[^a-zA-Z0-9_-]/g, '');
+// Validate the taskId to prevent path traversal attacks by ensuring it only contains safe characters.
+const isTaskIdValid = (taskId: string): boolean => {
+  // Allow only alphanumeric characters, dashes, and underscores, and ensure it's not empty.
+  const validTaskIdRegex = /^[a-zA-Z0-9_-]+$/;
+  return validTaskIdRegex.test(taskId);
 };
 
 export class GCSTaskStore implements TaskStore {
