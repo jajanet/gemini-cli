@@ -85,11 +85,10 @@ export class GCSTaskStore implements TaskStore {
   }
 
   private getObjectPath(taskId: string, type: ObjectType): string {
-    const sanitizedTaskId = sanitizeTaskId(taskId);
-    if (sanitizedTaskId !== taskId) {
-        throw new Error(`Invalid taskId: ${taskId}`);
+    if (!isTaskIdValid(taskId)) {
+      throw new Error(`Invalid taskId: ${taskId}`);
     }
-    return `tasks/${sanitizedTaskId}/${type}.tar.gz`;
+    return `tasks/${taskId}/${type}.tar.gz`;
   }
 
   async save(task: SDKTask): Promise<void> {
