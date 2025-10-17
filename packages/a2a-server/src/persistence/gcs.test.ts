@@ -240,15 +240,15 @@ describe('GCSTaskStore', () => {
               logDir: '/tmp/logs',
               tempDir: '/tmp/temp',
             },
-            taskState: 'running',
-            contextId: 'test-context',
+            taskState: 'working',
           },
         },
         kind: 'task',
         status: {
-          state: 'running',
+          state: 'working',
           timestamp: new Date().toISOString(),
         },
+        contextId: 'test-context',
         history: [],
         artifacts: [],
       };
