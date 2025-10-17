@@ -621,12 +621,17 @@ Logging in with Google... Please restart Gemini CLI to continue.
     onApprovalModeChange: handleApprovalModeChange,
   });
 
-  const { messageQueue, addMessage, clearQueue, getQueuedMessagesText } =
-    useMessageQueue({
-      isConfigInitialized,
-      streamingState,
-      submitQuery,
-    });
+  const {
+    messageQueue,
+    addMessage,
+    clearQueue,
+    getQueuedMessagesText,
+    popAllMessages,
+  } = useMessageQueue({
+    isConfigInitialized,
+    streamingState,
+    submitQuery,
+  });
 
   cancelHandlerRef.current = useCallback(() => {
     const pendingHistoryItems = [
@@ -791,8 +796,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
   );
 
   const [showErrorDetails, setShowErrorDetails] = useState<boolean>(false);
-  const [showToolDescriptions, setShowToolDescriptions] =
-    useState<boolean>(false);
+  const [renderMarkdown, setRenderMarkdown] = useState<boolean>(true);
 
   const [ctrlCPressedOnce, setCtrlCPressedOnce] = useState(false);
   const ctrlCTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -965,14 +969,13 @@ Logging in with Google... Please restart Gemini CLI to continue.
 
       if (keyMatchers[Command.SHOW_ERROR_DETAILS](key)) {
         setShowErrorDetails((prev) => !prev);
-      } else if (keyMatchers[Command.TOGGLE_TOOL_DESCRIPTIONS](key)) {
-        const newValue = !showToolDescriptions;
-        setShowToolDescriptions(newValue);
-
-        const mcpServers = config.getMcpServers();
-        if (Object.keys(mcpServers || {}).length > 0) {
-          handleSlashCommand(newValue ? '/mcp desc' : '/mcp nodesc');
-        }
+      } else if (keyMatchers[Command.TOGGLE_MARKDOWN](key)) {
+        setRenderMarkdown((prev) => {
+          const newValue = !prev;
+          // Force re-render of static content
+          refreshStatic();
+          return newValue;
+        });
       } else if (
         keyMatchers[Command.TOGGLE_IDE_CONTEXT_DETAIL](key) &&
         config.getIdeMode() &&
@@ -994,8 +997,6 @@ Logging in with Google... Please restart Gemini CLI to continue.
       constrainHeight,
       setConstrainHeight,
       setShowErrorDetails,
-      showToolDescriptions,
-      setShowToolDescriptions,
       config,
       ideContextState,
       handleExit,
@@ -1011,6 +1012,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       activePtyId,
       embeddedShellFocused,
       settings.merged.general?.debugKeystrokeLogging,
+      refreshStatic,
     ],
   );
 
@@ -1138,7 +1140,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       showErrorDetails,
       filteredConsoleMessages,
       ideContextState,
-      showToolDescriptions,
+      renderMarkdown,
       ctrlCPressedOnce,
       ctrlDPressedOnce,
       showEscapePrompt,
@@ -1220,7 +1222,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       showErrorDetails,
       filteredConsoleMessages,
       ideContextState,
-      showToolDescriptions,
+      renderMarkdown,
       ctrlCPressedOnce,
       ctrlDPressedOnce,
       showEscapePrompt,
@@ -1295,6 +1297,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       onWorkspaceMigrationDialogClose,
       handleProQuotaChoice,
       setQueueErrorMessage,
+      popAllMessages,
     }),
     [
       handleThemeSelect,
@@ -1321,6 +1324,7 @@ Logging in with Google... Please restart Gemini CLI to continue.
       onWorkspaceMigrationDialogClose,
       handleProQuotaChoice,
       setQueueErrorMessage,
+      popAllMessages,
     ],
   );
 
