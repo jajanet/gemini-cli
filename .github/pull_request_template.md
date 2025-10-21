@@ -1,6 +1,6 @@
 ## TLDR
 
-<!-- Please follow this doc before opening PRs for review: https://github.com/google-gemini/gemini-cli/blob/main/CONTRIBUTING.md -->
+**IMPORTANT**: Before submitting your PR, please review our [contributing guidelines](https://github.com/google-gemini/gemini-cli/blob/main/CONTRIBUTING.md).
 
 <!-- Add a brief description of what this pull request changes and why and any important things for reviewers to look at -->
 
